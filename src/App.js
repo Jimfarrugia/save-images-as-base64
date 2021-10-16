@@ -28,7 +28,21 @@ const saveImageToLocalStorage = url => {
       const dataUrl = prefix + base64;
       return localStorage.setItem("image", dataUrl);
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+      console.error(error);
+      console.log("Trying to fetch with CORS proxy...");
+      imageToBase64(`https://cors-anywhere.herokuapp.com/${url}`)
+        .then(base64 => {
+          console.log("Success!");
+          const prefix = getDataUrlPrefix(url);
+          const dataUrl = prefix + base64;
+          return localStorage.setItem("image", dataUrl);
+        })
+        .catch(error => {
+          console.error(error);
+          console.log("Fetch still failed with CORS proxy.");
+        });
+    });
 };
 
 function App() {
